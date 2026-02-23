@@ -1,6 +1,6 @@
 {
   "name": "@minions-content-assets/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Text posts, image briefs, video briefs, and generated asset references",
   "type": "module",
   "main": "./dist/index.js",

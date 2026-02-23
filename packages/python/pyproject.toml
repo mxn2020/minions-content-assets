@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "minions-content-assets"
-version = "0.1.0"
+version = "0.2.0"
 description = "Text posts, image briefs, video briefs, and generated asset references"
 readme = "README.md"
 license = { text = "MIT" }
