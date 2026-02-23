@@ -1,6 +1,12 @@
 ---
 name: minions-content-assets
-description: Text posts, image briefs, video briefs, and generated asset references
+id: OC-0115
+version: 1.0.0
+description: "Text posts, image briefs, video briefs, and generated asset references"
+category: ai
+subcategory: general
+tags: ["minion", "ai", "general"]
+comments:
 ---
 
 # minions-content-assets — Agent Skills
