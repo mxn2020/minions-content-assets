@@ -1,126 +1,111 @@
 ---
 name: minions-content-assets
-description: Agent skills for working with Minions Content-assets MinionTypes. Provides CRUD operations, CLI usage, and best practices for AI agents managing minions-content-assets data.
+description: Text posts, image briefs, video briefs, and generated asset references
 ---
 
-# Minions Content-assets Agent Skills
+# minions-content-assets — Agent Skills
 
-Skills for agents operating on the `minions-content-assets` toolbox.
+## What is a Content Asset in the Minions Context?
 
-## Prerequisites
+```
+a social media text post                   → TextPost
+a brief for generating an image            → ImageBrief
+a brief for generating a video             → VideoBrief
+a combined package ready for publishing    → AssetBundle
+```
 
-Install the SDK and CLI:
+---
+
+## MinionTypes
+
+```ts
+// text-post
+{
+  type: "text-post",
+  fields: {
+    accountId: string,
+    body: string,
+    hashtags: string[],
+    calendarSlotId: string,
+    status: "draft" | "review" | "approved" | "published",
+    generationMode: "prompt-only" | "api-generated",
+    createdAt: datetime
+  }
+}
+
+// image-brief / video-brief — prompts + style + generated refs
+// asset-bundle — combines text + image + video for one calendar slot
+```
+
+See TOML for full field definitions.
+
+---
+
+## Relations
+
+```
+text-post          --bundled_in-->       asset-bundle
+image-brief        --bundled_in-->       asset-bundle
+video-brief        --bundled_in-->       asset-bundle
+asset-bundle       --fills-->            calendar-slot (minions-content-plans)
+asset-bundle       --published_via-->    publish-job (minions-content-publishing)
+```
+
+---
+
+## Agent SKILLS for `minions-content-assets`
+
+```markdown
+# ContentAgent Skills
+
+## Skill: Create Text Post
+1. Load calendar-slot, account brand voice, and research insights
+2. Generate text post (prompt-only or API-generated per mode config)
+3. Add relevant hashtags from hashtag-sets
+
+## Skill: Assemble Bundle
+1. Combine text-post + image-brief + video-brief
+2. Create asset-bundle linked to calendar-slot
+
+## Hard Rules
+- Every bundle must have at least a text-post
+- Generation mode must match account's content-mode-config
+```
+
+
+---
+
+## CLI Reference
+
+Install globally:
 
 ```bash
-# TypeScript
-pnpm add @minions-content-assets/sdk
-
-# Python
-pip install minions-content-assets
-
-# CLI
 pnpm add -g @minions-content-assets/cli
 ```
 
----
+Set `MINIONS_STORE` env var to control where data is stored (default: `.minions/`).
 
-## Using the CLI
-
-The `content-assets` CLI provides basic project info and utilities:
+### Discover Types
 
 ```bash
-# Show project info (SDK name, CLI name, Python package)
-content-assets info
+content-assets types list
+content-assets types show <type-slug>
 ```
 
-Use the CLI as the primary interface for scripted operations. For programmatic access within agent code, use the SDK directly.
+### CRUD
 
----
-
-## Using the SDK
-
-### TypeScript
-
-```ts
-import { customTypes } from '@minions-content-assets/sdk/schemas';
-
-// List all available MinionTypes in this toolbox
-for (const type of customTypes) {
-  console.log(`${type.icon} ${type.name} (${type.slug})`);
-  console.log(`  ${type.description}`);
-  console.log(`  Fields: ${type.schema.map(f => f.name).join(', ')}`);
-}
-
-// Access a specific type
-const myType = customTypes.find(t => t.slug === 'YOUR_TYPE_SLUG');
+```bash
+content-assets create <type> -t "Title" -s "status"
+content-assets list <type>
+content-assets show <id>
+content-assets update <id> --data '{ "status": "active" }'
+content-assets delete <id>
+content-assets search "query"
 ```
 
-### Python
+### Stats & Validation
 
-```python
-from minions_content_assets.schemas import custom_types
-
-# List all available MinionTypes
-for t in custom_types:
-    print(f"{t.icon} {t.name} ({t.slug})")
-    print(f"  {t.description}")
+```bash
+content-assets stats
+content-assets validate ./my-minion.json
 ```
-
----
-
-## Skill: Create Minion
-
-When creating a new Minion of any type in this toolbox:
-
-1. Look up the MinionType from `customTypes` by slug
-2. Validate all required fields are present according to the schema
-3. Set `string` fields to their values, `number` fields to numeric values
-4. Set `select` fields to one of their valid options
-5. Set `boolean` fields to `true` or `false`
-6. Always include a timestamp for any `createdAt` or similar fields (ISO 8601 format)
-
----
-
-## Skill: Read / Query Minions
-
-When reading or searching for Minions:
-
-1. Query by MinionType slug to filter by type
-2. Use field values for secondary filtering
-3. For references (fields ending in `Id`), resolve the linked Minion for full context
-4. Return results in a structured format the calling agent can parse
-
----
-
-## Skill: Update Minion
-
-When updating an existing Minion:
-
-1. Load the current Minion by ID
-2. Validate the update against the MinionType schema
-3. Only modify the fields that need changing — preserve existing values
-4. If the type has a `status` field, follow valid status transitions
-5. If the type has an `updatedAt` field, set it to the current timestamp
-6. Log significant field changes for audit if the context requires it
-
----
-
-## Skill: Delete / Archive Minion
-
-When removing a Minion:
-
-1. Prefer soft-delete: set `status` to `"cancelled"` or `"archived"` if available
-2. Never hard-delete Minions that other Minions reference via ID fields
-3. Check for dependent Minions before any destructive operation
-4. If hard-delete is required, ensure all references are cleaned up first
-
----
-
-## Hard Rules
-
-- Every Minion MUST conform to its MinionType schema
-- All `select` fields must use valid option values
-- All ID reference fields must point to existing Minions
-- Timestamps must be in ISO 8601 format
-- Never create orphaned Minions — always set reference fields when applicable
-- This agent only writes to `minions-content-assets` — it reads from other toolboxes but never writes to them
