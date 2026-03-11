@@ -1,0 +1,8 @@
+name: "@minions-content-assets/cli"
+project_scope: child
+child_type: cli
+parent_project: minions-content-assets-workspace
+description: "CLI for minions-content-assets — Text posts, image briefs, video briefs, and generated asset references"
+priority: high
+deploy_url: null
+tags: null

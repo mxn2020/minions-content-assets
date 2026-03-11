@@ -1,0 +1,8 @@
+name: "@minions-content-assets/docs"
+project_scope: child
+child_type: docs
+parent_project: minions-content-assets-workspace
+description: "Standard compliance definition for @minions-content-assets/docs"
+priority: high
+deploy_url: null
+tags: null
