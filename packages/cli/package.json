@@ -1,6 +1,6 @@
 {
   "name": "@minions-content-assets/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI for minions-content-assets — Text posts, image briefs, video briefs, and generated asset references",
   "license": "MIT",
   "repository": {
