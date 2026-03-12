@@ -1,0 +1,16 @@
+name: minions-content-assets-workspace
+project_scope: main
+project_type: monorepo
+description: Text posts, image briefs, video briefs, and generated asset references
+tier: prototype
+lane: minions-platform
+priority: medium
+oss: true
+stack: ["typescript"]
+repo: "https://github.com/mxn2020/minions-content-assets"
+deploy_url: null
+last_active: 2026-03-11
+tags: ["minions-content-assets-workspace", "minions", "toolbox"]
+notes: null
+id: null
+category: minion-toolbox
